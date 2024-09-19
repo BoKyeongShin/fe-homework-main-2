@@ -35,8 +35,9 @@ export const handlers = [
     }
 
     if (locationName !== null) {
+      const locationNameLowerCase = locationName.toLocaleLowerCase();
       const filteredLocations = locations.filter((locationData) =>
-        locationData.name.includes(locationName)
+        locationData.name.toLocaleLowerCase().includes(locationNameLowerCase)
       );
       const result: LocationsResult = {
         total_count: filteredLocations.length,
