@@ -8,11 +8,13 @@ import { useStarredMutate } from '../../hooks/useStarredMutate';
 interface StartToggleButtonProp {
   isStarred: boolean;
   locationId: string;
+  onToggle: () => void;
 }
 
 export const StartToggleButton: React.FC<StartToggleButtonProp> = ({
   locationId,
   isStarred,
+  onToggle,
 }) => {
   const queryClient = useQueryClient();
   const { mutateAsync } = useStarredMutate(locationId, !isStarred);
@@ -22,6 +24,7 @@ export const StartToggleButton: React.FC<StartToggleButtonProp> = ({
     try {
       await mutateAsync();
       queryClient.invalidateQueries();
+      onToggle();
     } catch (error) {
       // TODO: alert
       console.log('error');
