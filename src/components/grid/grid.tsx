@@ -1,45 +1,12 @@
-import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
-import { CustomPagination } from "./customPagination";
-import { StarColumnHeader } from "./starColumnHeader";
-import { StartToggleButton } from "./startToggleButton";
-import { LocationButton } from "./locationButton";
-import { RobotCell } from "./robotCell";
-import { useFetchLocations } from "../../hooks/useFetchLocations";
-
-const columns: GridColDef[] = [
-  {
-    field: "star",
-    width: 60,
-    disableColumnMenu: true,
-    renderHeader: () => <StarColumnHeader />,
-    sortable: false,
-    renderCell: (params: GridRenderCellParams) => (
-      <StartToggleButton
-        isStarred={params.row.isStarred}
-        locationId={params.row.id}
-      />
-    ),
-  },
-  {
-    field: "locations",
-    headerName: "Locations",
-    flex: 2,
-    renderCell: (params: GridRenderCellParams) => (
-      <LocationButton isDisabled={params.row.robotId === ""}>
-        {params.value}
-      </LocationButton>
-    ),
-  },
-  {
-    field: "robotId",
-    headerName: "Robots",
-    flex: 1,
-    renderCell: (params: GridRenderCellParams) => (
-      <RobotCell noRobotId={params.row.robotId === ""} text={params.value} />
-    ),
-  },
-  { field: "locationType", headerName: "Location Types", flex: 1 },
-];
+import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
+import { CustomPagination } from './customPagination';
+import { StarColumnHeader } from './starColumnHeader';
+import { StartToggleButton } from './startToggleButton';
+import { LocationButton } from './locationButton';
+import { RobotCell } from './robotCell';
+import { useFetchLocations } from '../../hooks/useFetchLocations';
+import { useCallback, useMemo } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface GridProps {
   filteredValue: string;
@@ -48,13 +15,13 @@ interface GridProps {
 
 const getParams = (filteredValue: string, searchValue: string) => {
   // 설계를 잘못해서 필터링이 안되는 문제가 발생함
-  if (filteredValue === "All Locations") {
+  if (filteredValue === 'All Locations') {
     return undefined;
   }
 
-  if (filteredValue.includes("Starred")) {
+  if (filteredValue.includes('Starred')) {
     return {
-      is_starred: "true",
+      is_starred: 'true',
       ...(searchValue.length > 0 ? { robot_id: searchValue } : {}),
       ...(searchValue.length > 0 ? { location_name: searchValue } : {}),
     };
@@ -68,8 +35,59 @@ const getParams = (filteredValue: string, searchValue: string) => {
 };
 
 export const Grid: React.FC<GridProps> = ({ filteredValue, searchValue }) => {
+  const queryClient = useQueryClient();
   const { data: locations = [], isPending } = useFetchLocations(
-    getParams(filteredValue, searchValue),
+    getParams(filteredValue, searchValue)
+  );
+
+  const handleSetFilteredValue = useCallback(async () => {
+    if (filteredValue.includes('Starred')) {
+      queryClient.invalidateQueries({
+        queryKey: ['locations'],
+      });
+    }
+  }, [filteredValue, queryClient]);
+
+  const columns: GridColDef[] = useMemo(
+    () => [
+      {
+        field: 'star',
+        width: 60,
+        disableColumnMenu: true,
+        renderHeader: () => <StarColumnHeader />,
+        sortable: false,
+        renderCell: (params: GridRenderCellParams) => (
+          <StartToggleButton
+            isStarred={params.row.isStarred}
+            locationId={params.row.id}
+            onToggle={handleSetFilteredValue}
+          />
+        ),
+      },
+      {
+        field: 'locations',
+        headerName: 'Locations',
+        flex: 2,
+        renderCell: (params: GridRenderCellParams) => (
+          <LocationButton isDisabled={params.row.robotId === ''}>
+            {params.value}
+          </LocationButton>
+        ),
+      },
+      {
+        field: 'robotId',
+        headerName: 'Robots',
+        flex: 1,
+        renderCell: (params: GridRenderCellParams) => (
+          <RobotCell
+            noRobotId={params.row.robotId === ''}
+            text={params.value}
+          />
+        ),
+      },
+      { field: 'locationType', headerName: 'Location Types', flex: 1 },
+    ],
+    [handleSetFilteredValue]
   );
 
   return (
@@ -80,8 +98,8 @@ export const Grid: React.FC<GridProps> = ({ filteredValue, searchValue }) => {
       loading={isPending}
       slotProps={{
         loadingOverlay: {
-          variant: "skeleton",
-          noRowsVariant: "skeleton",
+          variant: 'skeleton',
+          noRowsVariant: 'skeleton',
         },
       }}
       initialState={{
@@ -96,9 +114,9 @@ export const Grid: React.FC<GridProps> = ({ filteredValue, searchValue }) => {
         pagination: CustomPagination,
       }}
       sx={{
-        borderBottomStyle: "none",
-        borderLeftStyle: "none",
-        borderRightStyle: "none",
+        borderBottomStyle: 'none',
+        borderLeftStyle: 'none',
+        borderRightStyle: 'none',
       }}
     />
   );
