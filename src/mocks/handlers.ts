@@ -35,9 +35,9 @@ export const handlers = [
     }
 
     if (locationName !== null) {
-      const locationNameLowerCase = locationName.toLocaleLowerCase();
+      const locationNameLowerCase = locationName.toLowerCase();
       const filteredLocations = locations.filter((locationData) =>
-        locationData.name.toLocaleLowerCase().includes(locationNameLowerCase)
+        locationData.name.toLowerCase().includes(locationNameLowerCase)
       );
       const result: LocationsResult = {
         total_count: filteredLocations.length,
@@ -48,8 +48,9 @@ export const handlers = [
     }
 
     if (robotId !== null) {
-      const filteredLocations = locations.filter(
-        (locationData) => locationData.id === parseInt(robotId)
+      const robotIdLowerCase = robotId.toLowerCase();
+      const filteredLocations = locations.filter((locationData) =>
+        locationData.robot?.id.toLowerCase().includes(robotIdLowerCase)
       );
       const result: LocationsResult = {
         total_count: filteredLocations.length,
