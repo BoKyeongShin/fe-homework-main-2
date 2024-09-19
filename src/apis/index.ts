@@ -1,7 +1,7 @@
-import axios from "axios";
+import axios from 'axios';
 
 export const Axios = axios.create({
-  baseURL: "http://localhost:3000",
+  baseURL: 'http://localhost:3000',
 });
 
 export interface LocationsPathParams {
@@ -12,6 +12,14 @@ export interface LocationsPathParams {
 }
 
 export const fetchLocations = async (params?: LocationsPathParams) => {
-  const response = await Axios.get("/locations", { params });
+  const response = await Axios.get('/locations', { params });
+  return response.data;
+};
+
+export const updateStar = async (id: string, isStarred: boolean) => {
+  const response = await Axios.put('/starred_location_ids', {
+    id,
+    is_starred: isStarred,
+  });
   return response.data;
 };
