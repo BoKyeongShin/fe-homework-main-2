@@ -1,19 +1,18 @@
-import { Title } from "../title/title";
-import { SearchBar } from "../searchBar/searchBar";
-import { Select } from "../select/select";
-import { Grid } from "../grid/grid";
-import { Box } from "@mui/material";
-import { useState, useEffect } from "react";
-import { useQueryClient } from "@tanstack/react-query";
+import { Title } from '../title/title';
+import { SearchBar } from '../searchBar/searchBar';
+import { Select } from '../select/select';
+import { Grid } from '../grid/grid';
+import { Box } from '@mui/material';
+import { useState } from 'react';
 
 const getQueryKeyParams = (searchValue: string) => {
-  if (searchValue === "All Locations") {
+  if (searchValue === 'All Locations') {
     return null;
   }
 
-  if (searchValue.includes("Starred")) {
+  if (searchValue.includes('Starred')) {
     return {
-      is_starred: "true",
+      is_starred: 'true',
     };
   }
 
@@ -21,16 +20,16 @@ const getQueryKeyParams = (searchValue: string) => {
 };
 
 export const FleetContent = () => {
-  const [filteredValue, setFilteredValue] = useState("All Locations");
-  const [searchValue, setSearchValue] = useState("");
+  const [filteredValue, setFilteredValue] = useState('All Locations');
+  const [searchValue, setSearchValue] = useState('');
 
   return (
-    <Box component="main" sx={{ px: "52px", py: 5 }}>
+    <Box component="main" sx={{ px: '52px', py: 5 }}>
       <Title>Your Fleet </Title>
       <Box
         sx={{
-          display: "flex",
-          height: "40px",
+          display: 'flex',
+          height: '40px',
           marginTop: 3,
         }}
       >
