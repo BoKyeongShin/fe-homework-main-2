@@ -2,8 +2,8 @@ import { IconButton } from '@mui/material';
 import { MouseEvent } from 'react';
 import StarOutlineIcon from '@mui/icons-material/StarOutline';
 import StarIcon from '@mui/icons-material/Star';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { updateStar } from '../../apis';
+import { useQueryClient } from '@tanstack/react-query';
+import { useStarredMutate } from '../../hooks/useStarredMutate';
 
 interface StartToggleButtonProp {
   isStarred: boolean;
@@ -15,9 +15,7 @@ export const StartToggleButton: React.FC<StartToggleButtonProp> = ({
   isStarred,
 }) => {
   const queryClient = useQueryClient();
-  const { mutateAsync } = useMutation({
-    mutationFn: () => updateStar(locationId, !isStarred),
-  });
+  const { mutateAsync } = useStarredMutate(locationId, !isStarred);
   const handleToggle = async (e: MouseEvent) => {
     e.stopPropagation();
     // update star > put starred_location_id
