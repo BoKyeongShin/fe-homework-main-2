@@ -5,7 +5,7 @@ import { StartToggleButton } from './startToggleButton';
 import { LocationButton } from './locationButton';
 import { RobotCell } from './robotCell';
 import { useFetchLocations } from '../../hooks/useFetchLocations';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 
 interface GridProps {
@@ -13,24 +13,29 @@ interface GridProps {
   searchValue: string;
 }
 
-const getParams = (filteredValue: string, searchValue: string) => {
-  // 설계를 잘못해서 필터링이 안되는 문제가 발생함
-  if (filteredValue === 'All Locations') {
-    return undefined;
+const getSearchParmas = (searchValue: string) => {
+  if (searchValue.toLowerCase().startsWith('pennybot')) {
+    return { robot_id: searchValue };
   }
+  return { location_name: searchValue };
+};
+
+const getParams = (filteredValue: string, searchValue: string) => {
+  // TODO: 설계를 잘못해서 필터링이 안되는 문제가 발생함
+  // TODO: 필터링 버그 픽스 하기
 
   if (filteredValue.includes('Starred')) {
     return {
       is_starred: 'true',
-      ...(searchValue.length > 0 ? { robot_id: searchValue } : {}),
-      ...(searchValue.length > 0 ? { location_name: searchValue } : {}),
+      ...(searchValue.length > 0 ? getSearchParmas(searchValue) : {}),
     };
   }
 
   return {
-    location_name: filteredValue,
-    ...(searchValue.length > 0 ? { robot_id: searchValue } : {}),
-    ...(searchValue.length > 0 ? { location_name: searchValue } : {}),
+    ...(filteredValue === 'All Locations'
+      ? {}
+      : { location_name: filteredValue }),
+    ...(searchValue.length > 0 ? getSearchParmas(searchValue) : {}),
   };
 };
 
