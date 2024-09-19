@@ -21,7 +21,7 @@ export const handlers = [
     const robotId = url.searchParams.get('robot_id');
     const isStarredStr = url.searchParams.get('is_starred');
 
-    if (isStarredStr !== null) {
+    if (isStarredStr !== null && locationName === null && robotId === null) {
       const isStarred = isStarredStr === 'true';
       const filteredLocations = locations.filter(
         (locationData) => locationData.is_starred === isStarred
@@ -36,9 +36,17 @@ export const handlers = [
 
     if (locationName !== null) {
       const locationNameLowerCase = locationName.toLowerCase();
-      const filteredLocations = locations.filter((locationData) =>
+      let filteredLocations = locations.filter((locationData) =>
         locationData.name.toLowerCase().includes(locationNameLowerCase)
       );
+
+      if (isStarredStr !== null) {
+        const isStarred = isStarredStr === 'true';
+        filteredLocations = filteredLocations.filter(
+          (locationData) => locationData.is_starred === isStarred
+        );
+      }
+
       const result: LocationsResult = {
         total_count: filteredLocations.length,
         locations: filteredLocations,
@@ -49,9 +57,16 @@ export const handlers = [
 
     if (robotId !== null) {
       const robotIdLowerCase = robotId.toLowerCase();
-      const filteredLocations = locations.filter((locationData) =>
+      let filteredLocations = locations.filter((locationData) =>
         locationData.robot?.id.toLowerCase().includes(robotIdLowerCase)
       );
+
+      if (isStarredStr !== null) {
+        const isStarred = isStarredStr === 'true';
+        filteredLocations = filteredLocations.filter(
+          (locationData) => locationData.is_starred === isStarred
+        );
+      }
       const result: LocationsResult = {
         total_count: filteredLocations.length,
         locations: filteredLocations,
@@ -69,6 +84,7 @@ export const handlers = [
   }),
 
   http.get('/starred_location_ids', () => {
+    // TODO: 구현하기
     const location_ids = JSON.parse(
       sessionStorage.getItem('starred_location_ids') || '[]'
     );
@@ -95,6 +111,7 @@ export const handlers = [
       }
     });
 
+    // TODO: sessionStorage 구현
     // sessionStorage.setItem('starred_location_ids', JSON.stringify(result));
 
     return HttpResponse.json(result);
